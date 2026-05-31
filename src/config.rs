@@ -77,8 +77,12 @@ impl Config {
         }
 
         let content = serde_json::to_string_pretty(self).context("failed to serialize config")?;
-        fs::write(&path, format!("{content}\n"))
-            .with_context(|| format!("failed to write config at {}", path.display()))?;
+        let tmp_path = path.with_extension("json.tmp");
+        fs::write(&tmp_path, format!("{content}\n")).with_context(|| {
+            format!("failed to write temporary config at {}", tmp_path.display())
+        })?;
+        fs::rename(&tmp_path, &path)
+            .with_context(|| format!("failed to replace config at {}", path.display()))?;
         Ok(())
     }
 
