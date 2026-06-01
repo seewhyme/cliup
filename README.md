@@ -7,7 +7,8 @@
 ## Install
 
 ```sh
-cargo install --path .
+brew tap seewhyme/tap
+brew install cliup
 ```
 
 ## Initialize
@@ -143,11 +144,9 @@ This unloads and removes the launchd plist. It does not delete `config.json` or 
 - `self` commands are treated as trusted local commands and are executed through `sh -lc`.
 - External command PATH is launchd-safe and prepends `/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin`.
 
-## Local Test Steps
+## Quick Check
 
 ```sh
-cargo build
-cargo install --path .
 cliup init
 cliup add npm @jackwener/opencli
 cliup list
