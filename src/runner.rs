@@ -316,14 +316,10 @@ fn run_self(
     env_path: &OsString,
     logger: &mut Logger,
 ) -> Result<()> {
-    if !command_exists(&package.name, env_path) {
-        skip(
-            logger,
-            &format!("command {} not found; skipping self update", package.name),
-        )?;
-        return Ok(());
-    }
-
+    // `self` packages run an arbitrary user-supplied command, so we trust the
+    // command string and let the login shell resolve it. This avoids skipping
+    // when the binary lives in a user-specific dir (e.g. ~/.local/bin) that
+    // is not in the launchd-inherited PATH.
     let command = package.command.as_deref().unwrap_or_default();
     if dry_run {
         dry_run_log(logger, &format!("sh -lc {}", shell_quote(command)))?;
