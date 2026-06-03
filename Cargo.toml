@@ -1,6 +1,6 @@
 [package]
 name = "cliup"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 description = "A small macOS CLI updater for a whitelisted set of developer tools"
 license = "MIT"

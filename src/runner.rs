@@ -103,11 +103,28 @@ pub fn doctor(config: Option<&Config>) -> Result<()> {
     Ok(())
 }
 
+// Common user-level bin directories where tools managed by `self` packages
+// (e.g. amp, rustup-installed binaries, bun) are installed. We add these
+// unconditionally so that `sh -lc` invocations run under launchd — where the
+// user's interactive shell rc files are not sourced — can still resolve the
+// commands.
+const USER_BIN_SUFFIXES: &[&str] = &[".local/bin", ".cargo/bin", ".bun/bin", "bin"];
+
 pub fn effective_path() -> OsString {
     let mut entries: Vec<PathBuf> = BASE_PATHS
         .iter()
         .map(|entry| PathBuf::from(*entry))
         .collect();
+
+    if let Some(home) = env::var_os("HOME") {
+        let home = PathBuf::from(home);
+        for suffix in USER_BIN_SUFFIXES {
+            let candidate = home.join(suffix);
+            if !entries.iter().any(|entry| entry == &candidate) {
+                entries.push(candidate);
+            }
+        }
+    }
 
     if let Some(existing) = env::var_os("PATH") {
         for path in env::split_paths(&existing) {
